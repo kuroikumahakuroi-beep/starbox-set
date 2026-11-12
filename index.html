@@ -203,9 +203,10 @@ svg.stage{display:block;width:100%;height:auto;touch-action:none;user-select:non
     <li><b>Dr</b>: キックペダル、スネア、シンバル、PC同期、その他</li>
     <li><b>Ba</b>: ヘッド、ワイヤレスマイク、イヤモニ、その他</li>
     <li><b>Gt(Marshall)</b>: ヘッド、キャビネット、ワイヤレスマイク、イヤモニ、その他</li>
+    <li><b>Key</b>: キーボード、ワイヤレスマイク、イヤモニ、その他</li>
     <li><b>Vo・Gt(JC)ほか</b>: ワイヤレスマイク、イヤモニ、その他</li>
   </ul>
-  <p>「PC同期」にチェックを入れると、回線数などを書く欄(例: 2回線)が開きます。「その他」にチェックを入れると、内容を書く欄が開きます。選んだ持ち込み機材は、メンバーのアイコンの横に「持:…」と表示され、提出画像にも載ります。</p>
+  <p>「キーボード」にチェックを入れると、出力(モノ1本／ステレオ2本)を選ぶ欄が開きます。ステレオはDIが2本必要です。「PC同期」にチェックを入れると、回線数などを書く欄(例: 2回線)が開きます。「その他」にチェックを入れると、内容を書く欄が開きます。選んだ持ち込み機材は、メンバーのアイコンの横に「持:…」と表示され、提出画像にも載ります。</p>
 
   <h3>ステージに配置のボタン</h3>
   <ul>
@@ -598,7 +599,7 @@ function renderPal(){
 function addItem(t,copy){
   var ty=copy?copy.type:t;if(LIMIT[ty]&&cnt(ty)>=LIMIT[ty])return;
   var a=TYPES[t],n=S.stage.length%5*12;
-  var it=copy?{id:uid(),type:copy.type,x:Math.min(SW,copy.x+20),y:Math.min(SH,copy.y+20),rot:copy.rot,label:copy.label,toms:copy.toms?copy.toms.slice():undefined,cym:copy.cym?copy.cym.slice():undefined,sit:copy.sit,bring:copy.bring,bringTxt:copy.bringTxt,bringPc:copy.bringPc,bringSel:copy.bringSel?copy.bringSel.slice():undefined,parts:copy.parts?copy.parts.slice().filter(function(n){return INST.indexOf(n)<0}):undefined,other:copy.other}:{id:uid(),type:t,x:225+n-24,y:175+n-24,rot:0,label:a.part,toms:t==='drums'?['12','13','16']:undefined,cym:t==='drums'?['c1','c2','r']:undefined};
+  var it=copy?{id:uid(),type:copy.type,x:Math.min(SW,copy.x+20),y:Math.min(SH,copy.y+20),rot:copy.rot,label:copy.label,toms:copy.toms?copy.toms.slice():undefined,cym:copy.cym?copy.cym.slice():undefined,sit:copy.sit,bring:copy.bring,bringTxt:copy.bringTxt,bringPc:copy.bringPc,bringKeys:copy.bringKeys,bringSel:copy.bringSel?copy.bringSel.slice():undefined,parts:copy.parts?copy.parts.slice().filter(function(n){return INST.indexOf(n)<0}):undefined,other:copy.other}:{id:uid(),type:t,x:225+n-24,y:175+n-24,rot:0,label:a.part,toms:t==='drums'?['12','13','16']:undefined,cym:t==='drums'?['c1','c2','r']:undefined};
   if(it.type==='person'&&copy)it.label=personLabel(it);
   clampItem(it);freeSpot(it);S.stage.push(it);if(!copy&&it.type==='drums')addDrummer(it);sel=it.id;renderStage();renderSel();save();
 }
@@ -714,11 +715,11 @@ function repoDrummer(d){drummers(d).forEach(function(p){if(p.auto){var sp=throne
 function followersOf(it){var o=[];if(it.type==='person')o=linkedMics(it.id);else if(it.type==='drums')drummers(it).forEach(function(p){o.push(p);linkedMics(p.id).forEach(function(m){o.push(m)})});return o}
 function turnAll(it,deg){if(it.type==='person')linkedMics(it.id).forEach(function(m){rotPt(m,it.x,it.y,deg)});else if(it.type==='drums')drummers(it).forEach(function(p){rotPt(p,it.x,it.y,deg);p.rot=((p.rot+deg)%360+360)%360;linkedMics(p.id).forEach(function(m){rotPt(m,it.x,it.y,deg)})})}
 function turnLinked(p,deg){var a=deg*Math.PI/180,c=Math.cos(a),sn=Math.sin(a);linkedMics(p.id).forEach(function(m){var dx=m.x-p.x,dy=m.y-p.y;m.x=Math.max(0,Math.min(SW,Math.round(p.x+dx*c-dy*sn)));m.y=Math.max(0,Math.min(SH,Math.round(p.y+dx*sn+dy*c)))})}
-var BR_ALL=[['head','ヘッド','ヘッド'],['cab','キャビネット','キャビ'],['kick','キックペダル','キック'],['snare','スネア','スネア'],['cym','シンバル','シンバル'],['pcsync','PC同期','PC同期'],['wmic','ワイヤレスマイク','ワイヤレス'],['iem','イヤモニ','イヤモニ'],['other','その他','その他']];
-function bringAvail(p){var ps=p.parts||[],ids=[];if(ps.indexOf('Ba')>=0||ps.indexOf('Gt(Marshall)')>=0)ids.push('head');if(ps.indexOf('Gt(Marshall)')>=0)ids.push('cab');if(ps.indexOf('Dr')>=0)ids.push('kick','snare','cym','pcsync');if(!ps.length||ps.some(function(n){return n!=='Dr'}))ids.push('wmic','iem');ids.push('other');return ids}
+var BR_ALL=[['head','ヘッド','ヘッド'],['cab','キャビネット','キャビ'],['kick','キックペダル','キック'],['snare','スネア','スネア'],['cym','シンバル','シンバル'],['pcsync','PC同期','PC同期'],['wmic','ワイヤレスマイク','ワイヤレス'],['iem','イヤモニ','イヤモニ'],['keys','キーボード','キーボード'],['other','その他','その他']];
+function bringAvail(p){var ps=p.parts||[],ids=[];if(ps.indexOf('Ba')>=0||ps.indexOf('Gt(Marshall)')>=0)ids.push('head');if(ps.indexOf('Gt(Marshall)')>=0)ids.push('cab');if(ps.indexOf('Dr')>=0)ids.push('kick','snare','cym','pcsync');if(!ps.length||ps.some(function(n){return n!=='Dr'}))ids.push('wmic','iem');if(ps.indexOf('Key')>=0)ids.push('keys');ids.push('other');return ids}
 function bringSel(p){var sl=p.bringSel||(p.bringTxt?['other']:[]);return bringAvail(p).filter(function(id){return sl.indexOf(id)>=0})}
-function bringItems(p,full){return bringSel(p).map(function(id){if(id==='other'){var t=(p.bringTxt||'').trim();return t||'その他'}var r=BR_ALL.filter(function(x){return x[0]===id})[0];if(id==='pcsync'){var pc=(p.bringPc||'').trim();return r[1]+(pc?'('+pc+')':'')}return full?r[1]:r[2]})}
-function bringUI(it){if(!it.bring)return '';var sl=bringSel(it);return BR_ALL.filter(function(r){return bringAvail(it).indexOf(r[0])>=0}).map(function(r){return '<label class="check"><input type="checkbox" data-act="bringopt" data-k="'+r[0]+'"'+(sl.indexOf(r[0])>=0?' checked':'')+'> '+r[1]+'</label>'}).join('')+(sl.indexOf('pcsync')>=0?'<label class="f" style="flex-basis:100%">PC同期の内容(回線数など)<input type="text" id="bringPc" maxlength="30" value="'+esc(it.bringPc||'')+'" placeholder="例: 2回線" autocomplete="off"></label>':'')+(sl.indexOf('other')>=0?'<label class="f" style="flex-basis:100%">その他の内容<input type="text" id="bringTxt" maxlength="40" value="'+esc(it.bringTxt||'')+'" placeholder="例: エフェクター" autocomplete="off"></label>':'')}
+function bringItems(p,full){return bringSel(p).map(function(id){if(id==='other'){var t=(p.bringTxt||'').trim();return t||'その他'}var r=BR_ALL.filter(function(x){return x[0]===id})[0];if(id==='pcsync'){var pc=(p.bringPc||'').trim();return r[1]+(pc?'('+pc+')':'')}if(id==='keys'){var kk=p.bringKeys;return 'キーボード'+(kk==='stereo'?'(ステレオ)':kk==='mono'?'(モノ)':'')}return full?r[1]:r[2]})}
+function bringUI(it){if(!it.bring)return '';var sl=bringSel(it);return BR_ALL.filter(function(r){return bringAvail(it).indexOf(r[0])>=0}).map(function(r){return '<label class="check"><input type="checkbox" data-act="bringopt" data-k="'+r[0]+'"'+(sl.indexOf(r[0])>=0?' checked':'')+'> '+r[1]+'</label>'}).join('')+(sl.indexOf('pcsync')>=0?'<label class="f" style="flex-basis:100%">PC同期の内容(回線数など)<input type="text" id="bringPc" maxlength="30" value="'+esc(it.bringPc||'')+'" placeholder="例: 2回線" autocomplete="off"></label>':'')+(sl.indexOf('keys')>=0?'<label class="f" style="flex-basis:100%">キーボードの出力(ステレオはDIが2本必要です)<select id="bringKeys"><option value="">選択してください</option><option value="mono"'+(it.bringKeys==='mono'?' selected':'')+'>モノ(1本)</option><option value="stereo"'+(it.bringKeys==='stereo'?' selected':'')+'>ステレオ(L/R 2本)</option></select></label>':'')+(sl.indexOf('other')>=0?'<label class="f" style="flex-basis:100%">その他の内容<input type="text" id="bringTxt" maxlength="40" value="'+esc(it.bringTxt||'')+'" placeholder="例: エフェクター" autocomplete="off"></label>':'')}
 function bringLines(it){var a=bringItems(it,false).map(function(t){return t.length>12?t.slice(0,12)+'…':t});if(!a.length)return [];var out=[],cur='持:',first=true;a.forEach(function(t){if(!first&&cur.length+t.length+1>14){out.push(cur);cur='';first=true}cur+=(first?'':'・')+t;first=false});out.push(cur);return out}
 function cabBrought(){return S.stage.some(function(x){return x.type==='person'&&x.bring&&(x.parts||[]).indexOf('Gt(Marshall)')>=0&&bringSel(x).indexOf('cab')>=0})}
 function memberBring(){return S.stage.filter(function(x){return x.type==='person'&&x.bring&&bringItems(x,true).length}).map(function(x){return (x.label||personLabel(x))+': '+bringItems(x,true).join('、')})}
@@ -865,6 +866,7 @@ document.addEventListener('input',function(e){
   if(t.dataset.i!==undefined&&(t.dataset.f==='min'||t.dataset.f==='sec')){var dv=t.value.replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)}).replace(/\D/g,'').slice(0,2);if(t.dataset.f==='sec'&&+dv>59)dv='59';if(dv!==t.value)t.value=dv;S.songs[+t.dataset.i][t.dataset.f]=dv;var tt=$('#totTime');if(tt)tt.innerHTML=totTxt();renderSlPrev();save();return}
   if(t.dataset.i!==undefined&&t.dataset.f&&(t.tagName==='INPUT'||t.tagName==='SELECT')){S.songs[+t.dataset.i][t.dataset.f]=t.value;save();return}
   if(t.id==='bringPc'&&sel){var ip=find(sel);if(ip){ip.bringPc=t.value;renderStage();save()}return}
+  if(t.id==='bringKeys'&&sel){var ik=find(sel);if(ik){ik.bringKeys=t.value;renderStage();save()}return}
   if(t.id==='bringTxt'&&sel){var ib=find(sel);if(ib){ib.bringTxt=t.value;renderStage();save()}return}
   if(t.id==='selLabel'&&sel){var it0=find(sel);if(it0.type==='person'){it0.other=t.value;it0.label=personLabel(it0)}else it0.label=t.value;renderStage();save()}
   if(t.id==='selRot'&&sel){var r2=find(sel),od=r2.rot;rotGuard(r2,+t.value-od,+t.value);t.value=r2.rot;renderStage();$('#rotV').textContent=r2.rot+'°';save()}

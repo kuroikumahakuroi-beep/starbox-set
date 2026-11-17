@@ -510,7 +510,8 @@ function shape(t,P,it){
     s=R(x,y,w,h,1.5)+C(0,-2,2.4)+C(-2.6,h/2-3.5,1.6)+C(2.6,h/2-3.5,1.6)}
   else if(t==='person'){ /* 真上から見た人(肩幅46cm)。鼻の三角が向き。座るを選ぶと椅子と脚(膝)を足す */
     var sit=it&&it.sit,oy=sit?-12:0;
-    var E='<ellipse cx="0" cy="'+oy+'" rx="23" ry="'+(sit?10:11)+'" '+st(P.fill,P.stroke,1.5)+'/>'+C(0,oy,8.5)+'<polygon points="0,'+(oy+10.5)+' -3.5,'+(oy+6.5)+' 3.5,'+(oy+6.5)+'" style="fill:'+P.stroke+';stroke:none"/>';
+    var PR=(P===PP),bf=PR?'#1A83C6':P.fill,bs=PR?'#0F5F94':P.stroke,hf=PR?'#CFE6F6':P.fill;
+    var E='<ellipse cx="0" cy="'+oy+'" rx="23" ry="'+(sit?10:11)+'" '+st(bf,bs,1.5)+'/><circle cx="0" cy="'+oy+'" r="8.5" '+st(hf,bs,1.3)+'/><polygon points="0,'+(oy+10.5)+' -3.5,'+(oy+6.5)+' 3.5,'+(oy+6.5)+'" style="fill:'+bs+';stroke:none"/>';
     s=sit?R(-17,-29,34,34,5)+'<rect x="-17" y="-31" width="34" height="4" style="fill:'+P.stroke+';stroke:none"/>'+R(-13,2,10,28,4)+R(3,2,10,28,4)+E:E}
   else {s=R(x,y,w,h,3,';stroke-dasharray:5 3')}
   return '<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" style="fill:transparent;stroke:none'+(t==='drums'?';pointer-events:none':'')+'"/>'+s;

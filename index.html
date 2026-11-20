@@ -153,7 +153,7 @@ svg.stage{display:block;width:100%;height:auto;touch-action:none;user-select:non
 <div class="app">
 <header class="top">
   <div class="venue">livehouse STARBOX · 大阪・日本橋</div>
-  <h1>セット図・セットリスト <span style="font-size:.5em;font-weight:700">ver.1.75</span></h1>
+  <h1>セット図・セットリスト <span style="font-size:.5em;font-weight:700">ver.1.81</span></h1>
   <p class="sub">出演バンド用。入力してスマホで画像にし、提出できます。</p>
 </header>
 <nav class="tabs" role="tablist" id="tabs"></nav>
@@ -168,6 +168,13 @@ svg.stage{display:block;width:100%;height:auto;touch-action:none;user-select:non
     <li><b>バンド名・ソロ名</b>を入力します。</li>
     <li><b>出演順</b>をプルダウンから選びます。</li>
     <li>入力できたら、「次へ:セット図」を押します。</li>
+  </ul>
+  <h3>前に作った内容を使う</h3>
+  <p>「前回の内容を使う」から、前に作ったセット図・セットリストを読み込めます。バンド名、セット図、セットリストが引き継がれます(出演順、提出日、持ち時間、動画撮影、幕の設定は引き継がれません)。読み込むときに、セット図とセットリストのどちらを使うか選べます。</p>
+  <ul>
+    <li><b>前回の内容を読み込む</b>: 同じスマホの同じブラウザで、前回入力した内容を読み込みます。閲覧履歴やサイトデータを消すと、読み込めなくなります。</li>
+    <li><b>ファイルに保存</b>: いまの内容をファイルに書き出します。スマホやブラウザが変わるときに使います。</li>
+    <li><b>ファイルから読み込む</b>: 保存したファイルを選んで、読み込みます。</li>
   </ul>
   <div class="hnote"><b>提出日について</b>主催者から届いたQRコードまたはリンクから開くと、提出先の日付が自動で決まります。画面に「提出先: ○月○日のフォルダ」と出ていれば大丈夫です。</div>
 </div>
@@ -240,6 +247,7 @@ svg.stage{display:block;width:100%;height:auto;touch-action:none;user-select:non
   <ul>
     <li><b>動画撮影</b>: 希望する場合にチェックします(1,000円。データは2〜3日以内にメールで受け渡し)。チェックすると、提出画像の右上に赤字で「Rec」が付きます。</li>
     <li><b>持ち時間</b>: 持ち時間を分で入力します。曲を入れていくと、横に「合計時間」が表示され、持ち時間を超えると赤字になります。</li>
+    <li><b>スモーク無し</b>: スモークを使わないときにチェックします。提出画像に「スモーク無し」と載ります。</li>
     <li><b>幕のOPENタイミング</b>: 「SEと同時」「合図で」「演奏が始まったら」「その他」から1つ選びます。公演全体で1回だけです。</li>
   </ul>
 
@@ -302,6 +310,12 @@ svg.stage{display:block;width:100%;height:auto;touch-action:none;user-select:non
       <label class="f">出演順<select id="order" data-bind="order"><option value="">選択</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option></select></label>
     </div>
   </div>
+  <div class="card" id="reuseCard">
+    <h2>前回の内容を使う</h2>
+    <p class="note" id="reuseNote" style="margin-bottom:10px">前に作ったセット図・セットリストを、読み込めます。</p>
+    <div class="btns"><button class="btn" type="button" data-act="lastLoad" id="lastBtn" hidden>前回の内容を読み込む</button><button class="btn" type="button" data-act="fileSave">ファイルに保存</button><button class="btn" type="button" data-act="fileLoad">ファイルから読み込む</button></div>
+    <input type="file" id="fileIn" accept=".json,application/json" hidden>
+  </div>
   <div class="btns"><button class="btn primary" type="button" data-tab="stage">次へ:セット図</button></div>
 </section>
 
@@ -346,7 +360,7 @@ svg.stage{display:block;width:100%;height:auto;touch-action:none;user-select:non
 
 <section class="panel" id="p-songs" hidden>
   <div class="card vc" id="vcCard">
-    <div class="vcrow"><label class="check"><input type="checkbox" id="video" data-bind="video"> 動画撮影(1,000円)</label><label class="check"><input type="checkbox" id="curtainUse" data-bind="curtainUse"> 幕を使用する</label><span class="vcl" id="curtainLbl" hidden>幕のOPEN</span><div class="btns vcseg" id="curtainSeg" hidden role="group"><button class="btn" type="button" data-act="curtain" data-v="se" aria-pressed="false">SEと同時</button><button class="btn" type="button" data-act="curtain" data-v="cue" aria-pressed="false">合図で</button><button class="btn" type="button" data-act="curtain" data-v="play" aria-pressed="false">演奏が始まったら</button><button class="btn" type="button" data-act="curtain" data-v="other" aria-pressed="false">その他</button></div></div>
+    <div class="vcrow"><label class="check"><input type="checkbox" id="video" data-bind="video"> 動画撮影(1,000円)</label><label class="check"><input type="checkbox" id="curtainUse" data-bind="curtainUse"> 幕を使用する</label><label class="check"><input type="checkbox" id="noSmoke" data-bind="noSmoke"> スモーク無し</label><span class="vcl" id="curtainLbl" hidden>幕のOPEN</span><div class="btns vcseg" id="curtainSeg" hidden role="group"><button class="btn" type="button" data-act="curtain" data-v="se" aria-pressed="false">SEと同時</button><button class="btn" type="button" data-act="curtain" data-v="cue" aria-pressed="false">合図で</button><button class="btn" type="button" data-act="curtain" data-v="play" aria-pressed="false">演奏が始まったら</button><button class="btn" type="button" data-act="curtain" data-v="other" aria-pressed="false">その他</button></div></div>
     <label class="f" id="curtainOtherWrap" hidden style="margin-top:10px">その他の内容<input type="text" id="curtainOther" data-bind="curtainOther" autocomplete="off"></label>
   </div>
   <div class="slp-wrap fold" id="slpWrap" hidden><div id="slpBar" role="button" tabindex="0">▸ 提出用プレビュー(タップで開く)</div><div id="slpBox" title="タップで畳む" style="cursor:pointer"><div class="sheet" id="slPrev"></div></div></div>
@@ -387,7 +401,8 @@ if(m[1]==='today')return{code:pd(tm)+pd(td),m:tm,d:td,day:true};
 var mm=+m[1].slice(0,2),dd=+m[1].slice(2);if(mm>=1&&mm<=12&&dd>=1&&dd<=31)return{code:m[1],m:mm,d:dd,day:(mm===tm&&dd===td)}}}catch(e){}return null})();
 var EVLOCK=!!EV;
 try{if(HOST)document.getElementById('subNote').innerHTML='<b>提出:</b> 「画像にして提出」を押すと、STARBOXのフォルダに提出されます。'}catch(e){}
-function curtHTML(){if(!S.curtainUse)return '幕: 使用しない';var m={se:'SEと同時',cue:'合図で',play:'演奏が始まったら',other:'その他'+(S.curtainOther?': '+esc(S.curtainOther):'')}[S.curtain];return '幕のOPENタイミング: <b>'+(m||'未選択')+'</b>'}
+function curtHTML(){var sm=S.noSmoke?' / <b>スモーク無し</b>':'';return curtHTML0()+sm}
+function curtHTML0(){if(!S.curtainUse)return '幕: 使用しない';var m={se:'SEと同時',cue:'合図で',play:'演奏が始まったら',other:'その他'+(S.curtainOther?': '+esc(S.curtainOther):'')}[S.curtain];return '幕のOPENタイミング: <b>'+(m||'未選択')+'</b>'}
 function cn(n){return n>=1&&n<=20?String.fromCharCode(9311+n):n>=21&&n<=35?String.fromCharCode(12860+n):String(n)}
 function evYMD(){var jt=new Date(Date.now()+324e5),y=jt.getUTCFullYear(),cur=Date.UTC(y,jt.getUTCMonth(),jt.getUTCDate()),t=Date.UTC(y,EV.m-1,EV.d);if(t<cur-18144e6)y++;else if(t>cur+18144e6)y--;return y+'年'+EV.m+'月'+EV.d+'日'}
 function evMake(code){var jt=new Date(Date.now()+324e5),tm=jt.getUTCMonth()+1,td=jt.getUTCDate(),pd=function(n){return ('0'+n).slice(-2)};if(code==='today')return{code:pd(tm)+pd(td),m:tm,d:td,day:true,t:1};if(!/^\d{4}$/.test(code))return null;var mm=+code.slice(0,2),dd=+code.slice(2);if(mm<1||mm>12||dd<1||dd>31)return null;return{code:code,m:mm,d:dd,day:(mm===tm&&dd===td)}}
@@ -450,7 +465,12 @@ var S=load(),sel=null,timer=null;
 var FK=1;
 function applyDims(){SW=712;SH=340;FK=Math.max(1,(SW+50)/500)}
 applyDims();
-function save(){renderSlPrev();clearTimeout(timer);timer=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}},200)}
+function snapOf(o){return {app:'starbox-setlist',v:1,savedAt:Date.now(),band:o.band,kind:o.kind,stage:o.stage,songs:o.songs,gear:o.gear,checks:o.checks}}
+var pendImp=null;
+function lastGet(){try{var r=localStorage.getItem('starbox-last-v1');if(r){var o=JSON.parse(r);if(o&&o.stage&&o.songs)return o}}catch(e){}return null}
+function impOpen(o){pendImp=o;$('#ovBox').innerHTML='<p style="margin:0"><b>前回の内容を読み込む</b></p><p class="note" style="margin:0">バンド名: <b>'+esc(o.band||'(未入力)')+'</b>。読み込む内容を選んでください。いまの入力内容は置き換わります。出演順、提出日、持ち時間、動画撮影、幕の設定は変わりません。</p><label class="check"><input type="checkbox" id="impStage" checked> セット図(ステージの配置、担当、機材)</label><label class="check"><input type="checkbox" id="impSongs" checked> セットリスト(曲)</label><div class="btns"><button class="btn primary" type="button" data-act="impGo">読み込む</button><button class="btn" type="button" data-act="impCancel">やめる</button></div>';$('#ov').hidden=false}
+function impGo(){var o=pendImp;if(!o)return;var st=$('#impStage').checked,sg=$('#impSongs').checked;if(!st&&!sg)return;S.band=o.band||S.band;if(st){S.kind=o.kind||S.kind;S.stage=JSON.parse(JSON.stringify(o.stage));S.gear=o.gear||S.gear;S.checks=o.checks||S.checks}if(sg){S.songs=JSON.parse(JSON.stringify(o.songs))}sel=null;pendImp=null;$('#ov').hidden=true;renderAll();save()}
+function save(){renderSlPrev();clearTimeout(timer);timer=setTimeout(function(){try{localStorage.setItem(KEY,JSON.stringify(S));if((S.band||'').trim())localStorage.setItem('starbox-last-v1',JSON.stringify(snapOf(S)))}catch(e){}},200)}
 function getPath(p){return p.split('.').reduce(function(o,k){return o&&o[k]},S)}
 function setPath(p,v){var a=p.split('.'),o=S;for(var i=0;i<a.length-1;i++){o[a[i]]=o[a[i]]||{};o=o[a[i]]}o[a[a.length-1]]=v}
 
@@ -779,9 +799,9 @@ function stageOnlyHTML(g,bring){
   var ppl=S.stage.filter(function(x){return x.type==='person'}).map(function(x){return esc(x.label||personLabel(x))});
   var bt=bring.length?bring.join('\n'):'—';
   var h3='font-size:14px;margin:0 0 6px;padding-bottom:3px;border-bottom:2px solid #111',pre='font-family:var(--font-body);font-size:14px;line-height:1.7;margin:0;white-space:pre-wrap';
-  return '<div class="sh-head"><div><div class="sh-venue">'+logoImg(28)+'</div><div class="sh-title">セット図'+'</div></div><div>'+'<div style="text-align:right;font-weight:700;font-size:20px;line-height:1.1;margin-bottom:4px;min-height:22px;white-space:nowrap">'+(EV?evYMD():'')+'</div>'+'<div style="text-align:right;color:#d00;font-weight:800;font-size:18px;line-height:1;margin-bottom:3px;letter-spacing:.05em'+(S.video?'':';visibility:hidden')+'">Rec</div>'+'<div class="sh-order">出演順 <b>'+esc(S.order)+'</b></div></div></div>'
+  return '<div class="sh-head"><div><div class="sh-venue">'+logoImg(28)+'</div><div class="sh-title">セット図'+'</div></div><div>'+'<div style="text-align:right;font-weight:700;font-size:20px;line-height:1.1;margin-bottom:4px;min-height:22px;white-space:nowrap">'+(EV?evYMD():'')+'</div>'+'<div class="sh-order" style="margin-top:22px">出演順 <span style="position:relative;display:inline-flex"><span style="position:absolute;left:0;right:0;bottom:100%;margin-bottom:3px;text-align:center;color:#d00;font-weight:800;font-size:18px;line-height:1;letter-spacing:.05em'+(S.video?'':';visibility:hidden')+'">Rec</span><b>'+esc(S.order)+'</b></span></div></div></div>'
   +'<div class="sh-band" style="padding:10px 14px;margin-bottom:10px"><span style="font-size:13px">バンド名・ソロ名</span><b style="font-size:26px">'+esc(S.band)+'</b></div>'
-  +'<div class="sh-video" style="font-size:12px;margin-bottom:12px;white-space:nowrap">'+curtHTML()+'</div>'
+  +'<div class="sh-video" style="font-size:14.4px;font-weight:700;margin-bottom:12px;white-space:nowrap">'+curtHTML()+'</div>'
   +'<div style="border:2px solid #111;padding:8px 8px 4px"><div style="font-size:14px;font-weight:700;margin-bottom:4px">ステージレイアウト(客席側が下)</div><svg viewBox="'+viewBoxStr()+'" width="728" height="'+Math.round(728*(SH+87)/(SW+50))+'" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:\'Noto Sans JP\',sans-serif">'+stageMarkup(PP,false)+'</svg></div>'
   +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:14px"><div><h3 style="'+h3+'">メンバー・担当</h3><pre style="'+pre+'">'+(ppl.join('\n')||'—')+'</pre></div><div><h3 style="'+h3+'">使用機材</h3><pre style="'+pre+'">'+(usedBold().join('\n')||'—')+'</pre></div></div>'
   +'<div style="margin-top:14px"><h3 style="'+h3+'">持ち込み機材</h3><pre style="'+pre+'">'+bt+'</pre></div>';
@@ -794,11 +814,11 @@ function sheetHTML(){
   var g=S.gear||{},bring=[];
   memberBring().forEach(function(x){bring.push('<b>'+esc(x)+'</b>')});bringStage().forEach(function(x){bring.push('<b>'+esc(x)+'</b>')});
   if(S.sheetMode==='stage')return stageOnlyHTML(g,bring);
-  return '<div class="sh-head"><div><div class="sh-venue">'+logoImg(28)+'</div><div class="sh-title">'+(S.sheetMode==='list'?'セットリスト':'セット図+セットリスト')+((totSecs()||parseInt(S.allot,10))?'<span style="display:block;font-size:.7em;line-height:1.3">('+(parseInt(S.allot,10)?'持ち時間 '+parseInt(S.allot,10)+'分':'')+(parseInt(S.allot,10)&&totSecs()?' / ':'')+(totSecs()?'合計 '+fmtTot(totSecs()):'')+')</span>':'')+'</div></div><div>'+'<div style="text-align:right;font-weight:700;font-size:20px;line-height:1.1;margin-bottom:4px;min-height:22px;white-space:nowrap">'+(EV?evYMD():'')+'</div>'+'<div style="text-align:right;color:#d00;font-weight:800;font-size:18px;line-height:1;margin-bottom:3px;letter-spacing:.05em'+(S.video?'':';visibility:hidden')+'">Rec</div>'+'<div class="sh-order">出演順 <b>'+esc(S.order)+'</b></div></div></div>'
+  return '<div class="sh-head"><div><div class="sh-venue">'+logoImg(28)+'</div><div class="sh-title">'+(S.sheetMode==='list'?'セットリスト':'セット図+セットリスト')+((totSecs()||parseInt(S.allot,10))?'<span style="display:block;font-size:.7em;line-height:1.3">('+(parseInt(S.allot,10)?'持ち時間 '+parseInt(S.allot,10)+'分':'')+(parseInt(S.allot,10)&&totSecs()?' / ':'')+(totSecs()?'合計 '+fmtTot(totSecs()):'')+')</span>':'')+'</div></div><div>'+'<div style="text-align:right;font-weight:700;font-size:20px;line-height:1.1;margin-bottom:4px;min-height:22px;white-space:nowrap">'+(EV?evYMD():'')+'</div>'+'<div class="sh-order" style="margin-top:22px">出演順 <span style="position:relative;display:inline-flex"><span style="position:absolute;left:0;right:0;bottom:100%;margin-bottom:3px;text-align:center;color:#d00;font-weight:800;font-size:18px;line-height:1;letter-spacing:.05em'+(S.video?'':';visibility:hidden')+'">Rec</span><b>'+esc(S.order)+'</b></span></div></div></div>'
   +'<div class="sh-band"><span>バンド名・ソロ名</span><b>'+esc(S.band)+'</b></div>'
   +(S.sheetMode==='list'?'':'<div class="sh-low"><div><h3>ステージレイアウト(客席側が下)</h3><svg viewBox="'+viewBoxStr()+'" width="746" height="'+Math.round(746*(SH+87)/(SW+50))+'" xmlns="http://www.w3.org/2000/svg" style="display:block;font-family:\'Noto Sans JP\',sans-serif">'+stageMarkup(PP,false)+'</svg></div>'
   +'<div><h3>使用機材</h3><pre>'+(usedBold().join('\n')||'—')+'</pre><h3>持ち込み機材</h3><pre>'+(bring.length?bring.join('\n'):'—')+'</pre></div></div>')
-  +'<div class="sh-video" style="margin-top:14px">'+curtHTML()+'</div>'
+  +'<div class="sh-video" style="margin-top:14px;font-size:13.2px;font-weight:700">'+curtHTML()+'</div>'
   +'<table><colgroup><col style="width:36px"><col><col style="width:50px"><col style="width:62px"><col style="width:66px"><col style="width:66px"><col style="width:96px"><col style="width:96px"></colgroup>'
   +'<thead><tr><th>No</th><th>曲名(MCも記入)</th><th>CD<br>NO</th><th>時間</th><th>板付き<br>・音先</th><th>曲調<br>UMS</th><th>音響<br>リクエスト</th><th>照明<br>リクエスト</th></tr></thead><tbody>'+rows+'</tbody></table>'
 ;
@@ -812,7 +832,7 @@ function fitSheet(){var w=$('.sheet-wrap'),sh=$('#sheet'),bx=$('#sheetBox');if(!
 window.addEventListener('resize',function(){if(cur==='sheet')fitSheet();if(cur==='songs')renderSlPrev()});
 function renderSheet(){$('#sheet').innerHTML=sheetHTML();fitSheet();var sbn=$('#submitBtn');if(sbn)sbn.hidden=!(EV&&SUBMIT_URL);var st=S.sheetMode==='stage';var md=S.sheetMode==='stage'?'stage':S.sheetMode==='list'?'list':'full';document.querySelectorAll('#modeSeg button').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.v===md))});$('#sheet').classList.toggle('lst',md==='list');var mn=$('#modeNote');if(mn)mn.textContent=md==='stage'?'セット図、メンバー、使用機材・持ち込み機材だけを大きく表示します。曲の情報は含まれません。':md==='list'?'':'セットリストとセット図を含む、通常の提出用です。'}
 function textSummary(){
-  var L=['【STARBOX 進行表】','バンド名: '+S.band,'出演順: '+S.order,(parseInt(S.allot,10)?'持ち時間: '+parseInt(S.allot,10)+'分 / 合計: '+fmtTot(totSecs()):'合計時間: '+fmtTot(totSecs())),'動画撮影: '+(S.video?'希望(1,000円)':'なし'),'幕のOPENタイミング: '+(!S.curtainUse?'幕なし':{se:'SEと同時',cue:'合図で',play:'演奏が始まったら',other:'その他'+(S.curtainOther?'('+S.curtainOther+')':'')}[S.curtain]||'-'),''];
+  var L=['【STARBOX 進行表】','バンド名: '+S.band,'出演順: '+S.order,(parseInt(S.allot,10)?'持ち時間: '+parseInt(S.allot,10)+'分 / 合計: '+fmtTot(totSecs()):'合計時間: '+fmtTot(totSecs())),'動画撮影: '+(S.video?'希望(1,000円)':'なし'),'幕のOPENタイミング: '+(!S.curtainUse?'幕なし':{se:'SEと同時',cue:'合図で',play:'演奏が始まったら',other:'その他'+(S.curtainOther?'('+S.curtainOther+')':'')}[S.curtain]||'-'),(S.noSmoke?'スモーク: 無し':''),''];
   S.songs.forEach(function(s,i){
     var m={ita:'板',oto:'音'};
     if(isMC(s))L.push((i+1)+'. MC'+(s.title?' '+s.title:'')+(fmtMS(s)?' ['+fmtMS(s)+']':'')); else L.push((i+1)+'. '+s.title+(s.cd?' (CD '+s.cd+')':'')+(fmtMS(s)?' ['+fmtMS(s)+']':'')+' / '+(s.start==='ita'?'板付き':s.start==='oto'?'音先':'-')+' / 曲調:'+(s.tone||'-'));
@@ -947,12 +967,17 @@ document.addEventListener('click',function(e){
     else{$('#ovBox').innerHTML='<p style="margin:0"><b>シンガー用(モニターのみ)にしますか?</b></p><p class="note" style="margin:0">モニター以外の機材(ドラム・アンプなど)と、ドラマーを削除します。メンバーとマイク、持ち込み機材は残ります。</p><div class="btns"><button class="btn danger" type="button" data-act="kindSingerOk">シンガー用にする</button><button class="btn" type="button" data-act="closeOv">キャンセル</button></div>';$('#ov').hidden=false}}
   else if(a==='kindSingerOk'){var dids=S.stage.filter(function(x){return x.type==='person'&&x.dlink}).map(function(x){return x.id});S.stage=S.stage.filter(function(x){if(x.type==='person')return !x.dlink;if(x.type==='mic')return dids.indexOf(x.link)<0;return !isEq(x)&&!isDrumMon(x)});S.kind='singer';sel=null;pruneParts();$('#ov').hidden=true;renderAll();save()}
   else if(a==='reset'){$('#ovBox').innerHTML='<p style="margin:0"><b>基本セットに戻しますか?</b></p><p class="note" style="margin:0">セット図の配置が、基本セットに置き換わります。セットリストなどの入力は消えません。</p><div class="btns"><button class="btn danger" type="button" data-act="resetOk">戻す</button><button class="btn" type="button" data-act="closeOv">キャンセル</button></div>';$('#ov').hidden=false}
-  else if(a==='resetOk'){var keep=S;S=basic();S.band=keep.band;S.order=keep.order;S.video=keep.video;S.curtain=keep.curtain;S.curtainUse=keep.curtainUse;S.curtainOther=keep.curtainOther;S.sheetMode=keep.sheetMode;S.kind='band';S.songs=keep.songs;S.gear=keep.gear;S.checks=keep.checks;sel=null;$('#ov').hidden=true;renderAll();save()}
+  else if(a==='resetOk'){var keep=S;S=basic();S.band=keep.band;S.order=keep.order;S.video=keep.video;S.curtain=keep.curtain;S.curtainUse=keep.curtainUse;S.curtainOther=keep.curtainOther;S.noSmoke=keep.noSmoke;S.sheetMode=keep.sheetMode;S.kind='band';S.songs=keep.songs;S.gear=keep.gear;S.checks=keep.checks;sel=null;$('#ov').hidden=true;renderAll();save()}
   else if(a==='tom'&&sel){it=find(sel);var tl=(it.toms||['12','13','16']).slice(),k=b.dataset.n,ix=tl.indexOf(k);if(ix>=0)tl.splice(ix,1);else tl.push(k);it.toms=['12','13','16'].filter(function(x){return tl.indexOf(x)>=0});renderStage();renderSel();save();if(dedId)dedRender()}
   else if(a==='flip'&&sel){it=find(sel);it.flip=!it.flip;repoDrummer(it);renderStage();renderSel();save()}
   else if(a==='cym'&&sel){it=find(sel);var cl=(it.cym||['c1','c2','r']).slice(),ck=b.dataset.n,cx=cl.indexOf(ck);if(cx>=0)cl.splice(cx,1);else cl.push(ck);it.cym=['c1','c2','r','x'].filter(function(x){return cl.indexOf(x)>=0});repoDrummer(it);renderStage();renderSel();save();if(dedId)dedRender()}
   else if(a==='stand'&&sel){it=find(sel);it.stand=!it.stand;renderStage();renderSel();save()}
   else if(a==='bringopt'&&sel){it=find(sel);var bs=(it.bringSel||(it.bringTxt?['other']:[])).slice(),bk=b.dataset.k,bx=bs.indexOf(bk);if(bx>=0)bs.splice(bx,1);else bs.push(bk);it.bringSel=bs;renderStage();renderSel();save();if(bk==='iem'&&bx<0)iemOpen(it)}
+  else if(a==='lastLoad'){var lo=lastGet();if(lo)impOpen(lo)}
+  else if(a==='fileSave'){var sn=snapOf(S),bl=new Blob([JSON.stringify(sn)],{type:'application/json'}),al=document.createElement('a');al.href=URL.createObjectURL(bl);var dn=new Date(Date.now()+324e5).toISOString().slice(0,10).replace(/-/g,'');al.download='starbox-setlist-'+dn+'.json';document.body.appendChild(al);al.click();setTimeout(function(){URL.revokeObjectURL(al.href);al.remove()},1000)}
+  else if(a==='fileLoad'){$('#fileIn').value='';$('#fileIn').click()}
+  else if(a==='impGo'){impGo()}
+  else if(a==='impCancel'){pendImp=null;$('#ov').hidden=true}
   else if(a==='memOk'){memClosedFor=sel;renderSel()}
   else if(a==='iemEdit'&&sel){iemOpen(find(sel))}
   else if(a==='iemchk'&&sel){it=find(sel);var im=it.iemMix=it.iemMix||{},ik=b.dataset.k;if(im[ik])delete im[ik];else im[ik]=5;$('#ovBox').innerHTML=iemHTML(it);renderStage();save()}
@@ -980,6 +1005,8 @@ function normParts(){S.stage.forEach(function(x){if(x.type==='person'&&x.parts&&
 function renderAll(){normParts();applyDims();renderKind();renderTabs();syncInputs();renderStage();renderSel();renderPal();renderSongs();renderUsed();renderCurtain();renderSlPrev()}
 (function(){var m=document.getElementById('evM'),d=document.getElementById('evD'),i,o='';for(i=1;i<=12;i++)o+='<option value="'+i+'">'+i+'</option>';m.innerHTML=o;o='';for(i=1;i<=31;i++)o+='<option value="'+i+'">'+i+'</option>';d.innerHTML=o;var j=new Date(Date.now()+324e5);m.value=j.getUTCMonth()+1;d.value=j.getUTCDate()})();
 $('#memEdit').appendChild($('#personOpts'));
+$('#fileIn').addEventListener('change',function(){var f=this.files&&this.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var o=JSON.parse(rd.result);if(o&&o.app==='starbox-setlist'&&o.stage&&o.songs)impOpen(o);else alert('このファイルは読み込めません。')}catch(e){alert('このファイルは読み込めません。')}};rd.readAsText(f)});
+(function(){var lo=lastGet();if(lo&&$('#lastBtn')){$('#lastBtn').hidden=false;$('#lastBtn').textContent='前回の内容を読み込む('+((lo.band||'').trim()||'名称未設定')+')'}})();
 paintEv();
 renderAll();
 })();
